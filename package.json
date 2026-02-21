@@ -1,0 +1,43 @@
+{
+  "name": "vigile-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Vigile AI Security — query trust scores for MCP servers and agent skills from within Claude Code, Cursor, and other AI agents",
+  "license": "MIT",
+  "author": "Vigile AI <hello@vigile.dev>",
+  "homepage": "https://vigile.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vigile-ai/vigile-mcp"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "ai-security",
+    "trust-score",
+    "vigile",
+    "claude",
+    "cursor",
+    "agent-security"
+  ],
+  "type": "module",
+  "bin": {
+    "vigile-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0"
+  }
+}
