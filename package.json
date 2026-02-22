@@ -13,9 +13,13 @@
   "keywords": [
     "mcp",
     "mcp-server",
+    "security",
     "ai-security",
     "trust-score",
+    "trust",
     "vigile",
+    "ai-agent",
+    "vulnerability-scanner",
     "claude",
     "cursor",
     "agent-security"
