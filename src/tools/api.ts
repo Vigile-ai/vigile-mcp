@@ -27,10 +27,20 @@ export async function fetchVigile(
     const data = await res.json().catch(() => null);
     return { ok: res.ok, status: res.status, data };
   } catch (error: any) {
+    // Sanitize error message — don't leak internal details like
+    // hostnames, ports, file paths, or stack traces
+    const rawMsg = error?.message || "Unknown error";
+    const safeMsg = rawMsg.includes("ECONNREFUSED") || rawMsg.includes("ENOTFOUND")
+      ? "API server unreachable"
+      : rawMsg.includes("ETIMEDOUT") || rawMsg.includes("timeout")
+      ? "Request timed out"
+      : rawMsg.includes("ECONNRESET")
+      ? "Connection reset"
+      : "Connection failed";
     return {
       ok: false,
       status: 0,
-      data: { detail: `Connection failed: ${error.message}` },
+      data: { detail: safeMsg },
     };
   }
 }
