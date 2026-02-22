@@ -7,7 +7,7 @@
   "homepage": "https://vigile.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Vigile-ai/vigile-mcp"
+    "url": "git+https://github.com/Vigile-ai/vigile-mcp.git"
   },
   "keywords": [
     "mcp",
@@ -21,7 +21,7 @@
   ],
   "type": "module",
   "bin": {
-    "vigile-mcp": "./dist/index.js"
+    "vigile-mcp": "dist/index.js"
   },
   "main": "./dist/index.js",
   "files": [
@@ -39,5 +39,11 @@
   "devDependencies": {
     "typescript": "^5.7.0",
     "@types/node": "^22.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
