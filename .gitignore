@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .env
+
+# MCP Registry auth tokens
+.mcpregistry_*
