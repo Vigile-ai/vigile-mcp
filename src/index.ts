@@ -30,12 +30,12 @@ const API_BASE = (() => {
   try {
     const u = new URL(_rawApiUrl);
     if (u.protocol !== "https:" && u.hostname !== "localhost" && u.hostname !== "127.0.0.1") {
-      console.error(`[vigile-mcp] VIGILE_API_URL must use HTTPS. Got: ${u.protocol}`);
+      console.error(`[vigile-mcp] VIGILE_API_URL must use HTTPS — falling back to default`);
       return "https://api.vigile.dev";
     }
     return u.origin;
   } catch {
-    console.error(`[vigile-mcp] Invalid VIGILE_API_URL: ${_rawApiUrl}`);
+    console.error(`[vigile-mcp] Invalid VIGILE_API_URL — falling back to default`);
     return "https://api.vigile.dev";
   }
 })();
