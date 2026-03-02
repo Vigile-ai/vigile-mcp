@@ -153,8 +153,8 @@ Get an API key at [vigile.dev](https://vigile.dev).
 | Tier | Scans/min | Monthly Quota |
 |------|-----------|---------------|
 | Free (no key) | 10 | 50 |
-| Pro ($9.99/mo) | 60 | 1,000 |
-| Pro+ ($29.99/mo) | 300 | 5,000 |
+| Pro ($29/mo) | 60 | 1,000 |
+| Pro+ ($99/mo) | 300 | 5,000 |
 
 Registry lookups (`vigile_check_server`, `vigile_check_skill`, `vigile_search`) do not count against your scan quota. Only `vigile_scan_content` consumes scans.
 
