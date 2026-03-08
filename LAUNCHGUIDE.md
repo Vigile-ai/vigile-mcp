@@ -1,4 +1,4 @@
-# Vigile MCP Server — Launch Guide
+# Vigile Security Scanner
 
 ## Quick Start
 

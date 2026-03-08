@@ -36,7 +36,10 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "prepublishOnly": "npm run build"
+    "audit:check": "npm audit --omit=dev --audit-level=moderate",
+    "audit:all": "npm audit --audit-level=moderate",
+    "preversion": "npm run build && npm run audit:check",
+    "prepublishOnly": "npm run build && npm run audit:check"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
