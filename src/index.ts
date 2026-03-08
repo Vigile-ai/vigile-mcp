@@ -23,6 +23,7 @@ import { checkServer } from "./tools/check-server.js";
 import { checkSkill } from "./tools/check-skill.js";
 import { scanContent } from "./tools/scan-content.js";
 import { searchRegistry } from "./tools/search.js";
+import { verifyLocation } from "./tools/verify-location.js";
 
 const _rawApiUrl = process.env.VIGILE_API_URL || "https://api.vigile.dev";
 // Validate API URL — must be HTTPS (unless localhost for development)
@@ -101,6 +102,23 @@ server.tool(
   },
   async ({ query, limit }) => {
     const result = await searchRegistry(API_BASE, API_KEY, query, limit);
+    return { content: [{ type: "text" as const, text: result }] };
+  }
+);
+
+// ── Tool: vigile_verify_location ──
+
+server.tool(
+  "vigile_verify_location",
+  "Assess location-related privacy and safety risks for AI agent interactions involving physical-world context (deliveries, meetups, financial transactions). Accepts an H3 cell index (preferred, privacy-preserving) or lat/lng coordinates with optional context. Returns risk level, score, factors, and recommendation. All assessment is performed locally — no location data is transmitted to Vigile servers.",
+  {
+    h3_cell: z.string().max(20).optional().describe("H3 cell index (15-character hex string, preferred for privacy over raw coordinates)"),
+    latitude: z.number().min(-90).max(90).optional().describe("Latitude (-90 to 90). Provide with longitude as an alternative to h3_cell."),
+    longitude: z.number().min(-180).max(180).optional().describe("Longitude (-180 to 180). Provide with latitude as an alternative to h3_cell."),
+    context: z.string().max(500).optional().describe("Context of the interaction (e.g., 'delivery to home address', 'in-person meetup', 'financial transaction')"),
+  },
+  async ({ h3_cell, latitude, longitude, context }) => {
+    const result = await verifyLocation(API_BASE, API_KEY, { h3_cell, latitude, longitude, context });
     return { content: [{ type: "text" as const, text: result }] };
   }
 );
