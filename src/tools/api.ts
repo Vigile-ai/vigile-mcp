@@ -10,7 +10,7 @@ export async function fetchVigile(
 ): Promise<{ ok: boolean; status: number; data: any }> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "User-Agent": "vigile-mcp/0.1.0",
+    "User-Agent": "vigile-mcp/0.1.7",
   };
 
   if (apiKey) {

@@ -1,7 +1,7 @@
 {
   "name": "vigile-mcp",
   "mcpName": "io.github.Vigile-ai/vigile-mcp",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "MCP server for Vigile AI Security — query trust scores for MCP servers and agent skills from within Claude Code, Cursor, and other AI agents",
   "license": "MIT",
   "author": "Vigile AI <support@vigile.dev>",
@@ -39,7 +39,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {

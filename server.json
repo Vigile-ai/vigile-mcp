@@ -6,12 +6,12 @@
     "url": "https://github.com/Vigile-ai/vigile-mcp",
     "source": "github"
   },
-  "version": "0.1.6",
+  "version": "0.1.7",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "vigile-mcp",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "transport": {
         "type": "stdio"
       }

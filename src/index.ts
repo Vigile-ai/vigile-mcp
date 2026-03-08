@@ -44,7 +44,7 @@ const API_KEY = process.env.VIGILE_API_KEY || "";
 
 const server = new McpServer({
   name: "vigile",
-  version: "0.1.0",
+  version: "0.1.7",
 });
 
 // ── Tool: vigile_check_server ──
@@ -53,7 +53,7 @@ server.tool(
   "vigile_check_server",
   "Look up the trust score and security findings for an MCP server in the Vigile registry. Returns trust score (0-100), trust level, findings summary, and a link to the full report.",
   {
-    name: z.string().min(1).max(500).describe("MCP server name or npm package name (e.g., '@anthropic/mcp-server-filesystem')"),
+    name: z.string().min(1).max(200).describe("MCP server name or npm package name (e.g., '@anthropic/mcp-server-filesystem')"),
   },
   async ({ name }) => {
     const result = await checkServer(API_BASE, API_KEY, name);
@@ -67,7 +67,7 @@ server.tool(
   "vigile_check_skill",
   "Look up the trust score for an agent skill (claude.md, .cursorrules, skill.md, etc.) in the Vigile registry. Returns trust score, trust level, findings summary.",
   {
-    name: z.string().min(1).max(500).describe("Agent skill name (e.g., 'react-component-builder')"),
+    name: z.string().min(1).max(200).describe("Agent skill name (e.g., 'react-component-builder')"),
   },
   async ({ name }) => {
     const result = await checkSkill(API_BASE, API_KEY, name);
@@ -81,9 +81,9 @@ server.tool(
   "vigile_scan_content",
   "Scan the content of an agent skill file for security issues. Submit raw content from a claude.md, .cursorrules, skill.md, or similar file for analysis. Returns trust score and detailed findings.",
   {
-    content: z.string().min(1).max(500_000).describe("The raw text content to scan (max 500KB)"),
-    file_type: z.string().max(50).optional().describe("File type: skill.md, claude.md, cursorrules, mdc-rule (default: skill.md)"),
-    name: z.string().max(500).optional().describe("Optional name for the scan result"),
+    content: z.string().min(1).max(100_000).describe("The raw text content to scan (max 100KB)"),
+    file_type: z.string().min(1).max(30).optional().describe("File type: skill.md, claude.md, cursorrules, mdc-rule (default: skill.md)"),
+    name: z.string().min(1).max(200).optional().describe("Optional name for the scan result"),
   },
   async ({ content, file_type, name }) => {
     const result = await scanContent(API_BASE, API_KEY, content, file_type, name);
@@ -127,10 +127,22 @@ server.tool(
 
 async function main() {
   const transport = new StdioServerTransport();
-  await server.connect(transport);
+  try {
+    await server.connect(transport);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      // Log structured error — message only, no stack traces leaked to stderr
+      console.error(`[vigile-mcp] Connection failed: ${error.message}`);
+    } else {
+      console.error("[vigile-mcp] Connection failed: unexpected error");
+    }
+    process.exit(1);
+  }
 }
 
-main().catch((error) => {
-  console.error("Fatal error:", error);
+main().catch((error: unknown) => {
+  // Startup failure — log safely and exit
+  const msg = error instanceof Error ? error.message : "unknown startup error";
+  console.error(`[vigile-mcp] Fatal: ${msg}`);
   process.exit(1);
 });
