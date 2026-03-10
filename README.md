@@ -108,6 +108,7 @@ Covers servers from npm, Smithery, PyPI, and other registries, plus agent skills
 | `vigile_check_skill` | Look up trust score for an agent skill (claude.md, .cursorrules, OpenClaw skills, etc.) |
 | `vigile_scan_content` | Scan raw content from a claude.md, .cursorrules, skill.md, or similar file for security issues |
 | `vigile_search` | Search the Vigile trust registry by keyword |
+| `vigile_verify_location` | Verify whether a skill uses location data safely and check for location-based attack patterns |
 
 ### Example Usage
 

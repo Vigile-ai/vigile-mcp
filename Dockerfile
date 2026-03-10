@@ -12,4 +12,5 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
+USER node
 ENTRYPOINT ["node", "dist/index.js"]
