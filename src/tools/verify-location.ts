@@ -9,7 +9,6 @@
 // raw lat/lng coordinates and returns a trust-adjusted risk
 // assessment without storing or logging the location.
 
-import { fetchVigile } from "./api.js";
 
 interface LocationInput {
   h3_cell?: string;
