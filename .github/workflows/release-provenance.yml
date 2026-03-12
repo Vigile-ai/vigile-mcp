@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate Manifest Sync
+        run: npm run validate:manifest
+
       - name: Build
         run: npm run build
 
