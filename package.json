@@ -33,6 +33,7 @@
     "dist"
   ],
   "scripts": {
+    "validate:manifest": "node scripts/validate_manifest_sync.mjs",
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
@@ -40,8 +41,8 @@
     "typecheck": "tsc --noEmit",
     "audit:check": "npm audit --omit=dev --audit-level=moderate",
     "audit:all": "npm audit --audit-level=moderate",
-    "preversion": "npm run build && npm run lint && npm run audit:check",
-    "prepublishOnly": "npm run build && npm run lint && npm run audit:check"
+    "preversion": "npm run validate:manifest && npm run build && npm run lint && npm run audit:check",
+    "prepublishOnly": "npm run validate:manifest && npm run build && npm run lint && npm run audit:check"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
