@@ -18,12 +18,27 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { checkServer } from "./tools/check-server.js";
 import { checkSkill } from "./tools/check-skill.js";
 import { scanContent } from "./tools/scan-content.js";
 import { searchRegistry } from "./tools/search.js";
 import { verifyLocation } from "./tools/verify-location.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const MCP_VERSION = (() => {
+  try {
+    const packageJsonPath = resolve(__dirname, "../package.json");
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as { version?: string };
+    return packageJson.version || "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+})();
 
 const _rawApiUrl = process.env.VIGILE_API_URL || "https://api.vigile.dev";
 // Validate API URL — must be HTTPS (unless localhost for development)
@@ -44,7 +59,7 @@ const API_KEY = process.env.VIGILE_API_KEY || "";
 
 const server = new McpServer({
   name: "vigile",
-  version: "0.1.7",
+  version: MCP_VERSION,
 });
 
 // ── Tool: vigile_check_server ──
