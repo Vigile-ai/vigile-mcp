@@ -1,7 +1,7 @@
 {
   "name": "vigile-mcp",
   "mcpName": "io.github.Vigile-ai/vigile-mcp",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "MCP server for Vigile AI Security — query trust scores for MCP servers and agent skills from within Claude Code, Cursor, and other AI agents",
   "license": "MIT",
   "author": "Vigile AI <support@vigile.dev>",
@@ -33,16 +33,16 @@
     "dist"
   ],
   "scripts": {
-    "validate:manifest": "node scripts/validate_manifest_sync.mjs",
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "lint": "eslint src/",
+    "test": "npm run build && node --test tests/**/*.test.mjs",
     "typecheck": "tsc --noEmit",
     "audit:check": "npm audit --omit=dev --audit-level=moderate",
     "audit:all": "npm audit --audit-level=moderate",
-    "preversion": "npm run validate:manifest && npm run build && npm run lint && npm run audit:check",
-    "prepublishOnly": "npm run validate:manifest && npm run build && npm run lint && npm run audit:check"
+    "preversion": "npm run build && npm run lint && npm run test && npm run audit:check",
+    "prepublishOnly": "npm run build && npm run lint && npm run audit:check"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

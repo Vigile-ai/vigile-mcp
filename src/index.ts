@@ -18,27 +18,16 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { checkServer } from "./tools/check-server.js";
 import { checkSkill } from "./tools/check-skill.js";
+import { checkProvenance } from "./tools/check-provenance.js";
+import { recallMemory } from "./tools/recall.js";
+import { rememberMemory } from "./tools/remember.js";
 import { scanContent } from "./tools/scan-content.js";
 import { searchRegistry } from "./tools/search.js";
+import { timelineMemory } from "./tools/timeline.js";
 import { verifyLocation } from "./tools/verify-location.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const MCP_VERSION = (() => {
-  try {
-    const packageJsonPath = resolve(__dirname, "../package.json");
-    const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8")) as { version?: string };
-    return packageJson.version || "0.0.0";
-  } catch {
-    return "0.0.0";
-  }
-})();
 
 const _rawApiUrl = process.env.VIGILE_API_URL || "https://api.vigile.dev";
 // Validate API URL — must be HTTPS (unless localhost for development)
@@ -59,7 +48,7 @@ const API_KEY = process.env.VIGILE_API_KEY || "";
 
 const server = new McpServer({
   name: "vigile",
-  version: MCP_VERSION,
+  version: "0.1.7",
 });
 
 // ── Tool: vigile_check_server ──
@@ -134,6 +123,91 @@ server.tool(
   },
   async ({ h3_cell, latitude, longitude, context }) => {
     const result = await verifyLocation(API_BASE, API_KEY, { h3_cell, latitude, longitude, context });
+    return { content: [{ type: "text" as const, text: result }] };
+  }
+);
+
+// ── Tool: vigile_recall ──
+
+server.tool(
+  "vigile_recall",
+  "Recall prior Vigile security memory context for an entity, pattern, or incident. Returns compact context, evidence chunks, and source references with provenance status.",
+  {
+    query: z.string().min(2).max(400).describe("Recall query, e.g. 'previous incident for inc_123'"),
+    scope: z.array(z.string().min(2).max(30)).max(20).optional().describe("Optional retrieval scope filters"),
+    max_chunks: z.number().int().min(1).max(20).optional().describe("Maximum evidence chunks (default: 8)"),
+    risk_level: z.enum(["low", "medium", "high"]).optional().describe("Set to high for high-risk actions"),
+    retrieval_mode: z.enum(["default", "ontology_v1"]).optional().describe("Experimental retrieval mode"),
+  },
+  async ({ query, scope, max_chunks, risk_level, retrieval_mode }) => {
+    const result = await recallMemory(API_BASE, API_KEY, query, scope, max_chunks, risk_level, retrieval_mode);
+    return { content: [{ type: "text" as const, text: result }] };
+  }
+);
+
+// ── Tool: vigile_timeline ──
+
+server.tool(
+  "vigile_timeline",
+  "Fetch a security timeline for an incident or topic from Vigile memory.",
+  {
+    topic: z.string().min(2).max(200).optional().describe("Topic selector for timeline lookup"),
+    incident_id: z.string().min(2).max(120).optional().describe("Incident ID selector (preferred when known)"),
+  },
+  async ({ topic, incident_id }) => {
+    const result = await timelineMemory(API_BASE, API_KEY, { topic, incident_id });
+    return { content: [{ type: "text" as const, text: result }] };
+  }
+);
+
+// ── Tool: vigile_check_provenance ──
+
+server.tool(
+  "vigile_check_provenance",
+  "Fetch canonical provenance payload for a memory source ID.",
+  {
+    source_id: z.string().min(3).max(128).describe("Canonical source identifier"),
+  },
+  async ({ source_id }) => {
+    const result = await checkProvenance(API_BASE, API_KEY, source_id);
+    return { content: [{ type: "text" as const, text: result }] };
+  }
+);
+
+// ── Tool: vigile_remember ──
+
+server.tool(
+  "vigile_remember",
+  "Record a bounded security memory episode for future recall (idempotent write path).",
+  {
+    event_type: z.string().min(2).max(120).describe("Episode event type"),
+    entity_id: z.string().min(2).max(120).optional().describe("Optional linked entity ID"),
+    summary: z.string().min(2).max(500).optional().describe("Optional human summary"),
+    adapter_type: z.enum(["event", "evidence", "incident", "advisory"]).optional(),
+    sensitivity: z.enum(["standard", "restricted"]).optional(),
+    payload: z.record(z.string(), z.any()).optional().describe("Structured payload (PII/secrets redacted by API policy)"),
+    source_refs: z.array(
+      z.object({
+        source_id: z.string().min(3).max(128),
+        source_type: z.enum(["incident", "finding", "event", "scan", "advisory", "rule", "episode", "external"]),
+        title: z.string().min(2).max(200),
+        url: z.string().max(500).optional(),
+        metadata: z.record(z.string(), z.any()).optional(),
+      })
+    ).optional(),
+    idempotency_key: z.string().min(8).max(128).optional(),
+  },
+  async ({ event_type, entity_id, summary, adapter_type, sensitivity, payload, source_refs, idempotency_key }) => {
+    const result = await rememberMemory(API_BASE, API_KEY, {
+      event_type,
+      entity_id,
+      summary,
+      adapter_type,
+      sensitivity,
+      payload,
+      source_refs,
+      idempotency_key,
+    });
     return { content: [{ type: "text" as const, text: result }] };
   }
 );
