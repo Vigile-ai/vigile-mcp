@@ -48,7 +48,7 @@ const API_KEY = process.env.VIGILE_API_KEY || "";
 
 const server = new McpServer({
   name: "vigile",
-  version: "0.1.7",
+  version: "0.1.10",
 });
 
 // ── Tool: vigile_check_server ──
